@@ -29,7 +29,7 @@ const DATA: TotalRouteName[] = [
   'MessageDetail',
 ];
 
-export default () => {
+const Example = () => {
   const [isRoot, setRoot] = useState(true);
   const [isModal, setModal] = useState(false);
   const [tabName, setTabName] =
@@ -272,3 +272,5 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
   },
 });
+
+export default Example;

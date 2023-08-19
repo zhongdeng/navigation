@@ -1,12 +1,18 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Button} from 'react-native';
+import Navigation from '../../navigation/Navigation';
 
 export type SettingRouteParams = undefined;
 
 export default () => {
   return (
     <View style={styles.container}>
-      <Text>Setting</Text>
+      <Button
+        title="Sign In"
+        onPress={() => {
+          Navigation.presentModal('SignIn');
+        }}
+      />
     </View>
   );
 };

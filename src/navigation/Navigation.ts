@@ -1,13 +1,13 @@
 import {
   TabActions,
-  StackActions,
   CommonActions,
   createNavigationContainerRef,
+  NavigationProp,
+  PartialState,
+  NavigationState,
+  Route,
 } from '@react-navigation/native';
 import {HomeTabParamList, RootStackParamList} from './types';
-
-// const screen = args[0];
-// const params = args[1];
 
 type NavigateType<RouteName extends keyof RootStackParamList> =
   RouteName extends unknown
@@ -40,6 +40,16 @@ type JumpAndNavigateType<
       ]
   : never;
 
+type ResetState =
+  | PartialState<NavigationState>
+  | NavigationState
+  | (Omit<NavigationState, 'routes'> & {
+      routes: Omit<
+        Route<keyof RootStackParamList, RootStackParamList>,
+        'key'
+      >[];
+    });
+
 class Navigation {
   public ref = createNavigationContainerRef();
 
@@ -48,6 +58,18 @@ class Navigation {
   ) => {
     if (this.ref.isReady()) {
       this.ref.dispatch(CommonActions.navigate(args[0], args[1]));
+    }
+  };
+
+  public reset = (
+    state: ResetState | undefined,
+    {source, target}: {source?: string; target?: string} = {
+      source: undefined,
+      target: undefined,
+    },
+  ) => {
+    if (this.ref.isReady()) {
+      this.ref.dispatch({...CommonActions.reset(state), source, target});
     }
   };
 
@@ -100,6 +122,23 @@ class Navigation {
         }),
       });
     }
+  };
+
+  public goBack = (
+    {source, target}: {source?: string; target?: string} = {
+      source: undefined,
+      target: undefined,
+    },
+  ) => {
+    if (this.ref.canGoBack()) {
+      this.ref.dispatch({...CommonActions.goBack(), source, target});
+    }
+  };
+
+  public currentParentState = (
+    navigation: NavigationProp<ReactNavigation.RootParamList>,
+  ) => {
+    return navigation.getParent()?.getState();
   };
 }
 

@@ -3,6 +3,7 @@ import {AuthParamList} from '../auth/route';
 import {AccountParamList} from '../account/route';
 import {FeedParamList} from '../feed/route';
 import {MessageParamList} from '../message/route';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export type CompositeParamList = AuthParamList &
   AccountParamList &
@@ -19,5 +20,7 @@ export type HomeTabParamList = {
   MessageNavigator: NavigatorScreenParams<CompositeParamList> | undefined;
 };
 
+export type GlogalScreenNavigationProps<T extends keyof RootStackParamList> =
+  NativeStackNavigationProp<RootStackParamList, T>;
 export type GlogalScreenRouteProps<T extends keyof RootStackParamList> =
   RouteProp<RootStackParamList, T>;

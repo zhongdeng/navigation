@@ -25,6 +25,7 @@ import {
   HomeTabParamList,
   CompositeParamList,
 } from './types';
+import {useAuthStore} from '../store';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const HomeTab = createBottomTabNavigator<HomeTabParamList>();
@@ -99,8 +100,11 @@ const FeedNavigator = () => {
 };
 
 const MessageNavigator = () => {
+  const token = useAuthStore(state => state.token);
   return (
-    <MessageStack.Navigator id="MessageStack" initialRouteName="MessageList">
+    <MessageStack.Navigator
+      id="MessageStack"
+      initialRouteName={token ? 'MessageList' : 'SignIn'}>
       {CompositeScreen(MessageStack.Screen)}
     </MessageStack.Navigator>
   );
