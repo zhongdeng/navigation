@@ -51,42 +51,42 @@ type ResetState =
     });
 
 class Navigation {
-  public ref = createNavigationContainerRef();
+  static navigation = createNavigationContainerRef<RootStackParamList>();
 
-  public navigate = <RouteName extends keyof RootStackParamList>(
+  static navigate = <RouteName extends keyof RootStackParamList>(
     ...args: NavigateType<RouteName>
   ) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch(CommonActions.navigate(args[0], args[1]));
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch(CommonActions.navigate(args[0], args[1]));
     }
   };
 
-  public reset = (
+  static reset = (
     state: ResetState | undefined,
     {source, target}: {source?: string; target?: string} = {
       source: undefined,
       target: undefined,
     },
   ) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch({...CommonActions.reset(state), source, target});
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch({...CommonActions.reset(state), source, target});
     }
   };
 
-  public jump = (name: keyof HomeTabParamList) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch(TabActions.jumpTo(name));
+  static jump = (name: keyof HomeTabParamList) => {
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch(TabActions.jumpTo(name));
     }
   };
 
-  public jumpAndNavigate = <
+  static jumpAndNavigate = <
     TabRouteName extends keyof HomeTabParamList,
     StackRouteName extends keyof RootStackParamList,
   >(
     ...args: JumpAndNavigateType<TabRouteName, StackRouteName>
   ) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch({
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch({
         ...CommonActions.navigate('Home', {
           screen: args[0],
           params: {
@@ -99,23 +99,23 @@ class Navigation {
     }
   };
 
-  public pushOnRoot = <RouteName extends keyof RootStackParamList>(
+  static pushOnRoot = <RouteName extends keyof RootStackParamList>(
     ...args: NavigateType<RouteName>
   ) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch({
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch({
         ...CommonActions.navigate(args[0], args[1]),
         source: undefined,
-        target: this.ref.getRootState().key,
+        target: this.navigation.getRootState().key,
       });
     }
   };
 
-  public presentModal = <RouteName extends keyof RootStackParamList>(
+  static presentModal = <RouteName extends keyof RootStackParamList>(
     ...args: NavigateType<RouteName>
   ) => {
-    if (this.ref.isReady()) {
-      this.ref.dispatch({
+    if (this.navigation.isReady()) {
+      this.navigation.dispatch({
         ...CommonActions.navigate('Modal', {
           screen: args[0],
           params: args[1],
@@ -124,21 +124,36 @@ class Navigation {
     }
   };
 
-  public goBack = (
+  static goBack = (
     {source, target}: {source?: string; target?: string} = {
       source: undefined,
       target: undefined,
     },
   ) => {
-    if (this.ref.canGoBack()) {
-      this.ref.dispatch({...CommonActions.goBack(), source, target});
+    if (this.navigation.canGoBack()) {
+      this.navigation.dispatch({...CommonActions.goBack(), source, target});
     }
   };
 
-  public currentParentState = (
-    navigation: NavigationProp<ReactNavigation.RootParamList>,
+  static getParentState = (
+    _navigation: NavigationProp<ReactNavigation.RootParamList>,
   ) => {
-    return navigation.getParent()?.getState();
+    return _navigation.getParent()?.getState();
+  };
+  static getRootState = () => {
+    return this.navigation.getRootState();
+  };
+  static getHomeState = () => {
+    const rootState = this.getRootState();
+    return rootState.routes[0].state;
+  };
+  static getFeedNavigationState = () => {
+    const homeState = this.getHomeState();
+    return homeState?.routes[0].state;
+  };
+  static getMessageNavigationState = () => {
+    const homeState = this.getHomeState();
+    return homeState?.routes[1].state;
   };
 }
 
@@ -148,4 +163,4 @@ export type {
   CompositeParamList,
   GlogalScreenRouteProps,
 } from './types';
-export default new Navigation();
+export default Navigation;

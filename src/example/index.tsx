@@ -59,7 +59,7 @@ const Example = () => {
   const navigate = (routeName: TotalRouteName) => {
     switch (routeName) {
       case 'Profile': {
-        const params = {userId: '111111'};
+        const params = {username: 'James Harden'};
         if (isRoot) {
           Navigation.pushOnRoot('Profile', params);
         } else if (isModal) {

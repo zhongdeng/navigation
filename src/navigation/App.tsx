@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StatusBar, useColorScheme} from 'react-native';
 import {
   DarkTheme,
@@ -26,6 +26,7 @@ import {
   CompositeParamList,
 } from './types';
 import {useAuthStore} from '../store';
+import slice from 'lodash/slice';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const HomeTab = createBottomTabNavigator<HomeTabParamList>();
@@ -101,6 +102,35 @@ const FeedNavigator = () => {
 
 const MessageNavigator = () => {
   const token = useAuthStore(state => state.token);
+
+  // 监听登录状态，替换此Navigator的RootRoute
+  useEffect(() => {
+    const messageState = Navigation.getMessageNavigationState();
+    if (messageState) {
+      if (token && messageState.routes[0].name !== 'MessageList') {
+        Navigation.reset(
+          {
+            index: messageState.index as number,
+            routes: [
+              {name: 'MessageList'},
+              ...slice<any>(messageState.routes, 1, messageState.routes.length),
+            ],
+          },
+          {target: messageState.key},
+        );
+      }
+      if (!token && messageState.routes[0].name !== 'SignIn') {
+        Navigation.reset(
+          {
+            index: 0,
+            routes: [{name: 'SignIn'}],
+          },
+          {target: messageState.key},
+        );
+      }
+    }
+  }, [token]);
+
   return (
     <MessageStack.Navigator
       id="MessageStack"
@@ -143,7 +173,7 @@ const Main = () => {
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
       />
       <NavigationContainer
-        ref={Navigation.ref}
+        ref={Navigation.navigation}
         theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RootStack.Navigator id="RootStack">
           <RootStack.Screen

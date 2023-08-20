@@ -13,8 +13,14 @@ export default () => {
   const navigation = useNavigation<GlogalScreenNavigationProps<'FeedLine'>>();
 
   const token = useAuthStore(state => state.token);
-  const headerRight = useCallback(() => !token && <SignInButton />, [token]);
-  const headerLeft = useCallback(() => token && <SignOutButton />, [token]);
+  const headerRight = useCallback(
+    () => (!token ? <SignInButton /> : null),
+    [token],
+  );
+  const headerLeft = useCallback(
+    () => (token ? <SignOutButton /> : null),
+    [token],
+  );
   useEffect(() => {
     navigation.setOptions({headerRight, headerLeft});
   }, [navigation, headerRight, headerLeft]);

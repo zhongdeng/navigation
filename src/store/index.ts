@@ -23,27 +23,3 @@ export const generateToken = (length: number = 32) => {
   }
   return result;
 };
-
-// 监听登录状态替换MessageNavigator的根Screen
-useAuthStore.subscribe(state => {
-  // 寻找MessageNavigator
-  const rootState = Navigation.ref.getRootState();
-  const homeRoute = rootState.routes[0];
-  if (homeRoute.name === 'Home') {
-    const homeState = homeRoute.state;
-    // const messageRoute = find(
-    //   homeState?.routes,
-    //   (route: any) => route.name === 'MessageNavigator',
-    // );
-    const messageRoute = homeState?.routes[1];
-    if (messageRoute?.state) {
-      Navigation.reset(
-        {
-          index: 0,
-          routes: [{name: state.token ? 'MessageList' : 'SignIn'}],
-        },
-        {target: messageRoute.state.key},
-      );
-    }
-  }
-});

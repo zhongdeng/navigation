@@ -1,5 +1,5 @@
 import {useNavigation, useNavigationState} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, View, StyleSheet, TextInput} from 'react-native';
 import Navigation from '../../navigation/Navigation';
 import {generateToken, useAuthStore} from '../../store';
@@ -28,29 +28,8 @@ export default () => {
           signIn(token, username);
 
           // 查找父级Navigator的栈顶路由名称，用于判断登录页在哪里，以进行不同的操作
-          const parentState = Navigation.currentParentState(navigation);
+          const parentState = Navigation.getParentState(navigation);
           const parentTopRouteName = parentState?.routeNames[parentState.index];
-          // // 1.如果parentTopRouteName为空则表示当前页面在最顶层的Navigator上，直接返回
-          // if (!parentTopRouteName) {
-          //   Navigation.goBack();
-          // }
-          // // 2.如果当前页面在FeedNavigator上，也直接返回
-          // if (parentTopRouteName === 'FeedNavigator') {
-          //   Navigation.goBack();
-          // }
-          // // 3.如果当前页面在MessageNavigator上，分两种情况
-          // if (parentTopRouteName === 'MessageNavigator') {
-          //   if (routes.length === 1) {
-          //     // 一种是当前页面在所在Navigator的根部，也就是第一个Tab页即显示登录页，这种情况下替换当前登录页
-          //     Navigation.reset({
-          //       index: 0,
-          //       routes: [{name: 'MessageList'}],
-          //     });
-          //   } else {
-          //     // 一种是不在根部，返回即可
-          //     Navigation.goBack();
-          //   }
-          // }
           // 如果当前页面在Modal的Navigator上，也分两种情况
           if (parentTopRouteName === 'Modal') {
             if (routes.length === 1) {
@@ -58,12 +37,12 @@ export default () => {
               Navigation.goBack();
             } else {
               // 不在根部，返回操作的是在Modal的栈中返回，模态弹窗不会消失，需要让Root捕获这个goBack的Action
-              Navigation.goBack({target: Navigation.ref.getRootState().key});
+              Navigation.goBack({target: Navigation.getRootState().key});
             }
+          } else if (parentTopRouteName !== 'MessageNavigator') {
+            // 如果是MessageNavigator，则不需要返回，直接替换，替换操作在对应的Navigator中监听操作
+            Navigation.goBack();
           }
-          //  else {
-          //   Navigation.goBack();
-          // }
         }}
       />
       <Button
